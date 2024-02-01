@@ -1,0 +1,43 @@
+# Enhanced Growth Estimation Tool
+
+## Overview
+
+This Python script is designed to estimate the future growth rate of a company by incorporating financial data and macroeconomic factors through an improved Porter's Five Forces analysis. The tool prompts the user for company data, macroeconomic parameters, and force weights, providing an estimated future growth rate as output.
+
+## Author
+
+- Navid Ramezani
+
+## Getting Started
+
+### Prerequisites
+
+Ensure you have Python installed on your machine. Additionally, install the required libraries using:
+
+```bash
+pip install pandas gdown
+Running the Script
+Clone the repository:
+bash
+Copy code
+git clone https://github.com/your-username/enhanced-growth-estimation.git
+cd enhanced-growth-estimation
+Run the script:
+bash
+Copy code
+python enhanced_growth_estimation.py
+Follow the prompts to provide company data, macroeconomic parameters, and force weights.
+
+Structure
+The code consists of several functions, each serving a specific purpose:
+
+calculate_cagr: Calculates the Compound Annual Growth Rate (CAGR).
+get_numeric_input: Prompts the user for numerical input with validation.
+load_csv_from_google_drive: Downloads a CSV file from Google Drive.
+get_company_data: Retrieves company data from a CSV file or Google Drive.
+get_macro_data: Prompts the user for macroeconomic parameters.
+improved_porters_five_forces_analysis: Performs an improved Porter's Five Forces analysis.
+estimate_growth: Estimates the future growth rate of a company.
+main: The main program that orchestrates the entire process.
+Usage
+Follow the prompts to provide input for company data, macroeconomic parameters, and force weights. The script will then calculate and display the estimated future growth rate of the company.
