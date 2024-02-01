@@ -14,17 +14,15 @@ This Python script is designed to estimate the future growth rate of a company b
 
 Ensure you have Python installed on your machine. Additionally, install the required libraries using:
 
-```bash
 pip install pandas gdown
 Running the Script
 Clone the repository:
 bash
 Copy code
 git clone https://github.com/navidrz/NVDRZ.git
-cd enhanced-growth-estimation
+cd 	estimated future growth rate
 Run the script:
-bash
-Copy code
+
 python enhanced_growth_estimation.py
 Follow the prompts to provide company data, macroeconomic parameters, and force weights.
 
