@@ -1,0 +1,258 @@
+# Import necessary libraries
+import pandas as pd
+import gdown
+
+# Define a function to calculate the compound annual growth rate (CAGR) of a series of values
+def calculate_cagr(initial_value, final_value, periods):
+    """
+    Calculate the Compound Annual Growth Rate (CAGR) given initial and final values over a number of periods.
+
+    Args:
+    - initial_value (float): The initial value.
+    - final_value (float): The final value.
+    - periods (int): The number of periods.
+
+    Returns:
+    - float or None: The calculated CAGR or None if periods is not positive.
+    """
+    if periods > 0:
+        return (final_value / initial_value) ** (1 / periods) - 1
+    else:
+        return None
+
+# Define a function to prompt the user for numerical input with enhanced error handling and validation
+def get_numeric_input(prompt, lower_limit=None, upper_limit=None):
+    """
+    Prompt the user for numerical input with enhanced error handling and validation.
+
+    Args:
+    - prompt (str): The input prompt message.
+    - lower_limit (float or None): The lower limit for input.
+    - upper_limit (float or None): The upper limit for input.
+
+    Returns:
+    - float: The user-entered numerical value.
+    """
+    while True:
+        try:
+            value = float(input(prompt))
+
+            # Validate against lower limit
+            if lower_limit is not None and value < lower_limit:
+                print(f"Value should be greater than or equal to {lower_limit}.")
+                continue
+
+            # Validate against upper limit
+            if upper_limit is not None and value > upper_limit:
+                print(f"Value should be less than or equal to {upper_limit}.")
+                continue
+
+            return value
+        except ValueError:
+            print("Please enter a valid numerical value.")
+
+# Function to load CSV file from Google Drive
+def load_csv_from_google_drive(file_id, output_path):
+    """
+    Download a CSV file from Google Drive.
+
+    Args:
+    - file_id (str): The Google Drive file ID.
+    - output_path (str): The local path to save the downloaded file.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing the data from the CSV file.
+    """
+    url = f'https://drive.google.com/uc?id={file_id}'
+    gdown.download(url, output_path, quiet=False)
+
+    try:
+        # Specify encoding parameter to handle UnicodeDecodeError
+        data = pd.read_csv(output_path, encoding='latin1')
+        return data
+    except FileNotFoundError:
+        print("Error loading CSV file. Please check the file path.")
+        return pd.DataFrame()
+
+# Function to get company data from CSV file or Google Drive
+def get_company_data():
+    """
+    Read company data from a CSV file or Google Drive.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing company data.
+    """
+    # Choose data source
+    data_source = input("Choose data source (local or google_drive): ").lower()
+
+    if data_source == 'local':
+        # Prompt user for the CSV file path
+        csv_path = input("Enter the path of the CSV file containing company data: ")
+
+        # Read data from CSV
+        try:
+            data = pd.read_csv(csv_path)
+            return data
+        except FileNotFoundError:
+            print("File not found. Please provide a valid CSV file path.")
+            return pd.DataFrame()
+    elif data_source == 'google_drive':
+        # Prompt user for the Google Drive file ID
+        file_id = input("Enter the Google Drive file ID containing company data: ")
+
+        # Set the local output path
+        output_path = 'company_data.csv'
+
+        # Load CSV file from Google Drive
+        return load_csv_from_google_drive(file_id, output_path)
+    else:
+        print("Invalid source. Please choose 'local' or 'google_drive'.")
+        return pd.DataFrame()
+
+# Function to prompt the user for macroeconomic parameters with enhanced validation
+def get_macro_data():
+    """
+    Prompt the user for macroeconomic parameters with enhanced validation.
+
+    Returns:
+    - dict: A dictionary containing macroeconomic parameters.
+    """
+    print("\nEnter macroeconomic parameters:")
+
+    # Exchange Rate Change
+    exchange_rate_change = get_numeric_input("Exchange Rate Change percentage: ")
+
+    # GDP Growth, Inflation, Interest Rate, and Government Policy
+    gdp_growth = get_numeric_input("GDP Growth rate: ")
+    inflation = get_numeric_input("Inflation rate: ")
+    interest_rate = get_numeric_input("Interest Rate: ")
+    government_policy = input("Government Policy: ")
+
+    return {
+        "Exchange Rate Change": exchange_rate_change,
+        "GDP Growth": gdp_growth,
+        "Inflation": inflation,
+        "Interest Rate": interest_rate,
+        "Government Policy": government_policy
+    }
+
+# Function for improved Porter's Five Forces analysis
+def improved_porters_five_forces_analysis(market_share_growth, net_income_growth, inflation, interest_rate, gdp_growth, exchange_rate_change, force_weights):
+    """
+    Perform improved Porter's Five Forces analysis with additional features.
+
+    Args:
+    - market_share_growth (float): Market share growth rate.
+    - net_income_growth (float): Net income growth rate.
+    - inflation (float): Inflation rate.
+    - interest_rate (float): Interest rate.
+    - gdp_growth (float): GDP growth rate.
+    - exchange_rate_change (float): Exchange rate change percentage.
+    - force_weights (dict): User-input weights for each force.
+
+    Returns:
+    - float: Average force representing the overall intensity of the competitive environment.
+    """
+    # Scaling factors - adjust as needed
+    market_share_scaling = 1
+    net_income_scaling = 1
+    inflation_scaling = 1
+    interest_rate_scaling = 1
+    gdp_growth_scaling = 1
+    exchange_rate_scaling = 1
+
+    # Normalize forces between 0 and 1
+    max_force_value = 5  # Maximum potential force value
+
+    threat_of_new_entrants = market_share_scaling * (1 - market_share_growth) / max_force_value
+    threat_of_substitutes = net_income_scaling * (1 - net_income_growth) / max_force_value
+    bargaining_power_of_buyers = inflation_scaling * inflation / max_force_value
+    bargaining_power_of_suppliers = interest_rate_scaling * interest_rate / max_force_value
+    rivalry_among_existing_competitors = gdp_growth_scaling * gdp_growth / max_force_value
+    exchange_rate_effect = exchange_rate_scaling * exchange_rate_change / max_force_value
+
+    # User input for force weights
+    weights = force_weights
+
+    # Calculate weighted average force
+    total_weight = sum(weights.values())
+    average_force = (
+        weights["threat_of_new_entrants"] * threat_of_new_entrants +
+        weights["threat_of_substitutes"] * threat_of_substitutes +
+        weights["bargaining_power_of_buyers"] * bargaining_power_of_buyers +
+        weights["bargaining_power_of_suppliers"] * bargaining_power_of_suppliers +
+        weights["rivalry_among_existing_competitors"] * rivalry_among_existing_competitors +
+        weights["exchange_rate_effect"] * exchange_rate_effect
+    ) / total_weight
+
+    return average_force
+
+# Function to estimate the future growth rate of a company using improved Porter's Five Forces analysis
+def estimate_growth(company_data, macro_data, force_weights):
+    """
+    Estimate the future growth rate of a company using improved Porter's Five Forces analysis.
+
+    Args:
+    - company_data (pd.DataFrame): DataFrame containing company data.
+    - macro_data (dict): Dictionary containing macroeconomic parameters.
+    - force_weights (dict): User-input weights for each force.
+
+    Returns:
+    - float: Estimated future growth rate.
+    """
+    # Extract relevant data from company_data
+    revenue = company_data["Revenue"]
+    net_income = company_data["Net Income"]
+    market_share = company_data["Market Share"]
+
+    # Extract macroeconomic parameters
+    gdp_growth = macro_data["GDP Growth"]
+    inflation = macro_data["Inflation"]
+    interest_rate = macro_data["Interest Rate"]
+    exchange_rate_change = macro_data["Exchange Rate Change"]
+    government_policy = macro_data["Government Policy"]
+
+    # Calculate growth rates using CAGR formula
+    revenue_growth = calculate_cagr(revenue.iloc[0], revenue.iloc[-1], len(revenue))
+    net_income_growth = calculate_cagr(net_income.iloc[0], net_income.iloc[-1], len(net_income))
+    market_share_growth = calculate_cagr(market_share.iloc[0], market_share.iloc[-1], len(market_share))
+
+    # Perform improved Porter's Five Forces analysis
+    forces_intensity = improved_porters_five_forces_analysis(
+        market_share_growth, net_income_growth, inflation, interest_rate, gdp_growth, exchange_rate_change, force_weights
+    )
+
+    # Estimate future growth incorporating improved Porter's Five Forces analysis
+    future_growth = revenue_growth * (1 - forces_intensity / 5)
+
+    return future_growth * 100
+
+# Main program
+def main():
+    # Get user input for company data source
+    company_data = get_company_data()
+
+    # Get user input for macroeconomic parameters
+    macro_data = get_macro_data()
+
+    # User input for force weights
+    print("\nEnter weights for each force (between 0 and 1):")
+    force_weights = {
+        "threat_of_new_entrants": get_numeric_input("Threat of New Entrants: "),
+        "threat_of_substitutes": get_numeric_input("Threat of Substitutes: "),
+        "bargaining_power_of_buyers": get_numeric_input("Bargaining Power of Buyers: "),
+        "bargaining_power_of_suppliers": get_numeric_input("Bargaining Power of Suppliers: "),
+        "rivalry_among_existing_competitors": get_numeric_input("Rivalry Among Existing Competitors: "),
+        "exchange_rate_effect": get_numeric_input("Exchange Rate Effect: ")
+    }
+
+    # Call the estimate_growth function with the user-input data
+    if not company_data.empty:
+        future_growth = estimate_growth(company_data, macro_data, force_weights)
+
+        # Print the result
+        print(f"\nThe estimated future growth rate of the company is {future_growth:.2f}%")
+
+# Run the main program
+if __name__ == "__main__":
+    main()
