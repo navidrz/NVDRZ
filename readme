@@ -20,7 +20,7 @@ Running the Script
 Clone the repository:
 bash
 Copy code
-git clone https://github.com/your-username/enhanced-growth-estimation.git
+git clone https://github.com/navidrz/NVDRZ.git
 cd enhanced-growth-estimation
 Run the script:
 bash
